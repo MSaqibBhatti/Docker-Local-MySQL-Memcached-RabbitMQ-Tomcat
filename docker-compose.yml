@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  sql:
+    build:
+      context: ./Dockerfiles/sql
+    image: saqibbhatti/sql
+    container_name: app-sql
+    ports:
+      - "3306:3306"
+    volumes:
+      - sqldata:/vr/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD = "sqlpass"
+
+  cache:
+    image: memcached
+    ports:
+      - "11211:11211"
+    
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+  
+  tomcat:
+    build:
+      context: ./Dockerfiles/tomcat
+    image: saqibbhatti/tomcat
+    container_name: app-tomcat
+    ports:
+      - "8080:8080"
+    volumes:
+      - tomcatdata:/usr/local/tomcat/webapps
+  
+  nginx:
+    build:
+      context: ./Dockerfiles/nginx
+    image: saqibbhatti/nginx
+    container_name: app-nginx
+    ports:
+      - "80:80"
+
+volumes:
+  sqldata: {}
+  tomcatdata: {}
